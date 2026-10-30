@@ -1,0 +1,33 @@
+%%{init: {"flowchart": {"htmlLabels": true}} }%%
+flowchart TD
+    A["Input: raw audio bytes\n(uploaded clip)"] --> B["Write to temp file"]
+    B --> C["librosa.load\nsr=32000, mono=True\n(full natural-length waveform,\nno crop/pad)"]
+    C --> D["logmel()  [preprocess.py]\nn_fft=1024, hop=512, n_mels=64\n-> librosa.power_to_db"]
+    D --> E["_normalize_mel\nzero-mean / unit-std"]
+    E --> F["Reshape to tensor\n(batch=1, channel=1, 64, T)"]
+
+    subgraph FEAT["CNNBaseline.features"]
+        direction TB
+        F1["Conv2d 1->16, k3, pad1\nBatchNorm2d -> ReLU\nMaxPool2d(2)"]
+        F2["Conv2d 16->32, k3, pad1\nBatchNorm2d -> ReLU\nMaxPool2d(2)"]
+        F3["Conv2d 32->64, k3, pad1\nBatchNorm2d -> ReLU\nMaxPool2d(2)"]
+        F4["Conv2d 64->128, k3, pad1\nBatchNorm2d -> ReLU"]
+        F5["AdaptiveAvgPool2d((1,1))\n-> 128 x 1 x 1"]
+        F1 --> F2 --> F3 --> F4 --> F5
+    end
+
+    subgraph CLS["CNNBaseline.classifier"]
+        direction TB
+        C1["Flatten"]
+        C2["Dropout(0.3)"]
+        C3["Linear(128 -> 64)"]
+        C4["ReLU"]
+        C5["Dropout(0.3)"]
+        C6["Linear(64 -> n_classes)\n(raw logits)"]
+        C1 --> C2 --> C3 --> C4 --> C5 --> C6
+    end
+
+    F --> FEAT
+    FEAT --> CLS
+    CLS --> G["Softmax"]
+    G --> H["Output:\n{ scores: [...] }"]

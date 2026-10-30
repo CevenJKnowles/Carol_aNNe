@@ -1,0 +1,35 @@
+%%{init: {"flowchart": {"htmlLabels": true}} }%%
+flowchart TD
+    A["Client\nPOST /predict (audio file)"] --> B
+
+    subgraph API["API layer  [api.py]"]
+        direction TB
+        B["FastAPI endpoint\ncheck CNN checkpoint is loaded"]
+    end
+
+    subgraph PREDICT["Prediction  [predict.py]"]
+        direction TB
+        C["predict(audio_bytes)\ncalls cnn.run()"]
+    end
+
+    subgraph MODEL["CNN Model  [models/cnn.py + preprocess.py]"]
+        direction TB
+        M1["Preprocessing\naudio load -> log-mel spectrogram\n-> normalize -> tensor"]
+        M2["Feature Extraction\n4x Conv/BatchNorm/ReLU blocks\n-> AdaptiveAvgPool2d"]
+        M3["Classification\nLinear -> ReLU -> Linear\n-> raw logits"]
+        M1 --> M2 --> M3
+    end
+
+    subgraph POST["Postprocessing  [predict.py + labels.py]"]
+        direction TB
+        P1["Softmax -> per-class scores"]
+        P2["Map scores to label names\nhighest score -> label"]
+        P1 --> P2
+    end
+
+    R["Response to client\n{ label, probs, filename }"]
+
+    B --> C
+    C --> MODEL
+    MODEL --> POST
+    POST --> R

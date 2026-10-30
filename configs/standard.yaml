@@ -1,0 +1,18 @@
+# Carol aNNe Standard: configuration stem
+
+size: standard
+
+input:
+  type: "<PLACEHOLDER: audio | image | signal>"
+  channels: "<PLACEHOLDER: number of input channels>"
+
+model:
+  width: "<PLACEHOLDER: width setting>"
+  depth: "<PLACEHOLDER: depth setting>"
+
+training:
+  seed: "<PLACEHOLDER: seed>"
+  dataset: "<PLACEHOLDER: dataset name and path>"
+
+export:
+  format: "<PLACEHOLDER: onnx | other>"

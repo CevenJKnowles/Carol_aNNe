@@ -1,0 +1,25 @@
+%%{init: {"flowchart": {"htmlLabels": true}} }%%
+flowchart TD
+    A["Data Prep\nmanifest.csv -> train/val/test split\n-> label mapping"] --> B
+
+    subgraph B["Dataset construction"]
+        direction LR
+        B1["Training pipeline\nchunk into 4s windows\n(loop-fill remainder)\n-> log-mel -> cache -> normalize"]
+        B2["Val/Test pipeline\nfull natural-length clip\n-> log-mel -> cache -> normalize"]
+        B1 ~~~ B2
+    end
+
+    B --> C["DataLoaders\ntrain: batch=32, shuffled\nval/test: batch=1"]
+
+    C --> D
+
+    subgraph D["Training Loop  (CNNBaseline, 20 epochs)"]
+        direction TB
+        D1["Optimize\nAdam + CrossEntropyLoss"]
+        D2["Validate each epoch\ntrack loss / accuracy / macro-F1"]
+        D3["Adapt LR\nReduceLROnPlateau on macro-F1"]
+        D4["Checkpoint best model\nby highest val_macro_f1"]
+        D1 --> D2 --> D3 --> D4
+    end
+
+    D --> E["Evaluation & Analytics\n[cnn_analytics.py]\nclassification report, confusion matrix,\ntraining curves, sample browser,\nduration-bias check, UMAP/PCA, GradCAM"]

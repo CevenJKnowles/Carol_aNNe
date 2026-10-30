@@ -1,0 +1,60 @@
+# Python
+*.egg-info
+.coverage
+.ipynb_checkpoints
+**/__pycache__/
+.python-version
+*.pyc
+**/build
+dist/
+
+# Environments and tool caches
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# OS files
+.DS_Store
+*Zone.Identifier
+.directory
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Data
+raw_data/
+*.sqlite
+*.zip
+data/
+cache_*/
+*.npy
+
+# Trained models
+/models/
+*.joblib
+*.h5
+*.pickle
+*.pckl
+*.pkl
+*.pth
+*.onnx
+*.ckpt
+*.safetensors
+*.tflite
+
+# Credentials
+.env
+.env.yaml
+.credentials
+secrets.toml
+
+.keep/
+
+# Archive (local only)
+/archive/

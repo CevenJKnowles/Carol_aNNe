@@ -1,0 +1,15 @@
+Carol_aNNe
+Copyright 2026 Ceven Jupiter Knowles
+
+Licences in this repository
+  Code (src, notebooks)                         Apache-2.0        see LICENSE
+  Documentation (README, ADRs, guides)          CC BY-NC 4.0      see LICENSE-DOCS
+  Code samples inside documents follow the code licence.
+
+Third-party software and models (not part of this repository)
+  panns-inference    PANNs audio tagging library, declared as a dependency. No file in this repository imports it.    MIT
+  PANNs CNN14 weights    Downloaded by panns-inference on first use, not distributed here.    CC BY 4.0
+                         Qiuqiang Kong, Yin Cao, Turab Iqbal, Yuxuan Wang, Wenwu Wang, Mark Plumbley.
+                         PANNs: Large-Scale Pretrained Audio Neural Networks for Audio Pattern Recognition (Pretrained Models).
+                         https://doi.org/10.5281/zenodo.3987831
+  Each model is downloaded from its publisher and keeps its own licence.

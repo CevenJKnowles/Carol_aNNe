@@ -1,0 +1,59 @@
+%%{init: {"flowchart": {"htmlLabels": true}} }%%
+flowchart TD
+    A["manifest.csv"] --> B["Split by 'split' column\ntrain_df / val_df / test_df"]
+    B --> C["LABEL_TO_IDX mapping\n[labels.py]"]
+
+    subgraph TRAINDS["Train set: PlaceholderDatasetChunked"]
+        direction TB
+        T1["chunk_clip()\nlibrosa.load full clip\n-> split into 4.0s\nnon-overlapping windows"]
+        T2["_loop_fill()\ntrailing remainder\nforward-looped + crossfaded\nto a full 4.0s window"]
+        T3["logmel() per chunk\n[preprocess.py]"]
+        T4["cache chunk .npy\n(../data/cache_chunked)"]
+        T5["per-sample normalize\nzero-mean / unit-std"]
+        T1 --> T2 --> T3 --> T4 --> T5
+    end
+
+    subgraph EVALDS["Val/Test set: PlaceholderDatasetNatural"]
+        direction TB
+        V1["librosa.load full clip\nsr=32000, mono=True\n(no crop / pad / loop)"]
+        V2["logmel()\n[preprocess.py]"]
+        V3["cache clip .npy\n(../data/cache_natural)"]
+        V4["per-sample normalize\nzero-mean / unit-std"]
+        V1 --> V2 --> V3 --> V4
+    end
+
+    C --> T1
+    C --> V1
+
+    T5 --> DL1["train_loader\nbatch_size=32, shuffle=True"]
+    V4 --> DL2["val_loader / test_loader\nbatch_size=1, shuffle=False\n(variable-width tensors\ncan't batch-collate)"]
+
+    subgraph SETUP["Training setup"]
+        direction TB
+        S1["CNNBaseline()\n[models/cnn.py]"]
+        S2["criterion = CrossEntropyLoss()"]
+        S3["optimizer = Adam\nlr=1e-3, weight_decay=1e-4"]
+        S4["scheduler = ReduceLROnPlateau\nmode=max, factor=0.5,\npatience=3, min_lr=1e-5"]
+    end
+
+    DL1 --> EPOCH
+    DL2 --> EPOCH
+    SETUP --> EPOCH
+
+    subgraph EPOCH["Epoch loop  (N_EPOCHS=20)"]
+        direction TB
+        E1["model.train()\nfor each train batch:\nzero_grad -> forward -> CE loss\n-> backward -> optimizer.step()"]
+        E2["accumulate train_loss, train_acc"]
+        E3["model.eval(), no_grad\nforward over val_loader"]
+        E4["compute val_loss, val_acc,\nval_macro_f1 (sklearn f1_score)"]
+        E5["scheduler.step(val_macro_f1)\nhalves LR if stalled"]
+        E6["append history:\ntrain/val loss+acc, val_macro_f1, lr"]
+        E7{"val_macro_f1 >\nbest so far?"}
+        E8["torch.save checkpoint\n{state_dict, labels,\nval_macro_f1, epoch}"]
+        E1 --> E2 --> E3 --> E4 --> E5 --> E6 --> E7
+        E7 -->|yes| E8
+        E7 -->|no| E1
+        E8 --> E1
+    end
+
+    EPOCH --> R["Best checkpoint:\ncnn_baseline_best.pt\n(highest val_macro_f1)"]
