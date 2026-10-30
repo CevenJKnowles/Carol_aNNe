@@ -26,11 +26,11 @@ provenance:
 
 ## Purpose
 
-Carol aNNe is a small convolutional neural network, built from scratch and designed as a general template, so that a builder can read her from the first layer to the last, train her on their own audio, images or signals, and run her in one of three planned sizes: Nano from a microcontroller upward, Micro from a single-board computer upward and Standard on a mobile device.
+Carol aNNe is a small convolutional neural network, built from scratch and designed as a general template, so that a developer can read the model from the first layer to the last, train it on their own audio, images or signals, and run it in one of three planned sizes: Nano from a microcontroller upward, Micro from a single-board computer upward and Standard on a mobile device.
 
 ## Design goals
 
-At about 107,000 parameters (106,538 in the current version) she is small enough to be understood completely, so that the curious builder has something to read from end to end and the builder who already knows the task has a short path from a configuration file to a trained, exported model. Each model is fully trainable, can say when it is unsure, and gives an error message for bad input. It is open source, free and belongs fully to its owner, which underlines privacy, and it is made primarily to be altered to the developer's needs. Each model is to be published with its notebooks, benchmarks and tests as a public service, so that anyone can check what it does and reproduce it.
+At about 107,000 parameters (106,538 in the current version) the model is small enough to be understood completely, so that a curious developer has something to read from end to end and a developer who already knows the task has a short path from a configuration file to a trained, exported model. Each model is fully trainable, can say when it is unsure, and gives an error message for bad input. It is open source, free and belongs fully to its owner, which underlines privacy, and it is made primarily to be altered to the developer's needs. Each model is to be published with its notebooks, benchmarks and tests as a public service, so that anyone can check what it does and reproduce it.
 
 ## What Carol aNNe is
 
@@ -54,7 +54,7 @@ Current phase: 2 of 5. Last updated 2026-10-30.
 |---|---|---|
 | **1. Core network and service** | `CNNBaseline`, log-mel preprocessing, trained checkpoint, FastAPI prediction service | **Complete** |
 | ◆ *Milestone* | *A from-scratch CNN of 106,538 parameters, served over an API* | *Reached* |
-| **2. Configurable template** | One recipe with one configuration per size (Nano, Micro, Standard); input channels and front ends for audio, images and signals | **Current** |
+| **2. Configurable template** | One recipe with one configuration per size (Nano, Micro, Standard); developer-chosen class count and labels; input channels and front ends for audio, images and signals | **Current** |
 | ◆ *Milestone* | *Three models built from one configuration, with published parameter counts and file sizes* | *Planned* |
 | **3. Honest behaviour and adaptation** | Calibrated confidence, rejection of out-of-scope input, an error message for bad input, learning from corrections | Planned |
 | ◆ *Milestone* | *Reliability and rejection results: a model that reports when it does not know* | *Planned* |
